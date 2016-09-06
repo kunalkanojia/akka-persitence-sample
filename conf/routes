@@ -1,0 +1,24 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /                           controllers.HomeController.index
+
+GET     /ws                         controllers.TradeWSController.ws
+
+POST    /create                     controllers.HomeController.handleUser
+POST    /login                      controllers.HomeController.handleLogin
+
+GET     /dashboard                  controllers.TradeController.dashboard
+
+GET    /trade/create                controllers.TradeController.create
+POST   /trade/create                controllers.TradeController.handleCreate
+
+GET    /trade/edit/:tradeId         controllers.TradeController.edit(tradeId: String)
+POST    /trade/edit/:tradeId         controllers.TradeController.handleEdit(tradeId: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
