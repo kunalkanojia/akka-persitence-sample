@@ -2,7 +2,6 @@ package com.kkanojia.example.actors
 
 import akka.actor.Props
 import akka.persistence.PersistentActor
-import akka.persistence.journal.leveldb.SharedLeveldbJournal
 import com.kkanojia.example.models.User
 import com.kkanojia.example.utils.exceptions.UserPresentException
 
@@ -10,16 +9,12 @@ object UserActor {
 
   //Command
   case class CreateUser(user: User)
-
   case object GetUser
 
   //Response
   case class UserCreationSuccess(user: User)
-
   case class UserCreationFailed(cause: Throwable)
-
   case class UserRetrievalSuccess(user: User)
-
   case object UserRetrievalFailure
 
   //Event

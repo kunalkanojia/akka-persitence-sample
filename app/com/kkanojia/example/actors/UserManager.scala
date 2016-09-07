@@ -5,6 +5,7 @@ import scala.collection._
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
+import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
 import akka.persistence.query.{EventEnvelope, PersistenceQuery}
 import akka.stream.ActorMaterializer
@@ -27,15 +28,13 @@ class UserManager(val id: String) extends Actor with ActorLogging {
 
   private val usersInSystem = mutable.Map[String, String]() //email -> UUID
 
-  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
+  val queries = PersistenceQuery(context.system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
   val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("user-events", 0L)
   implicit val mat = ActorMaterializer()
 
   src.runForeach { env =>
     env.event match {
-      case UserCreated(user) => {
-        usersInSystem(user.email) = user.id
-      }
+      case UserCreated(user) => usersInSystem(user.email) = user.id
       case _ => println(s"Unknown event $env")
     }}
 

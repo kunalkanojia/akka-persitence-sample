@@ -4,8 +4,8 @@ import scala.collection.mutable
 
 import akka.NotUsed
 import akka.actor.{Actor, ActorRef, Props}
+import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import akka.persistence.query.{EventEnvelope, PersistenceQuery}
-import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import com.kkanojia.example.models.Trade
@@ -31,7 +31,7 @@ class TradeManager(val id: String, userId: String) extends Actor {
 
   private val userTrades = mutable.Map[String, Trade]()
 
-  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
+  val queries = PersistenceQuery(context.system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
   val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag(userId, 0L)
 

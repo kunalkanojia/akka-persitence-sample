@@ -23,9 +23,10 @@ libraryDependencies ++= Seq(
   //Akka Persistence
   "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
   "com.typesafe.akka" %% "akka-persistence-query-experimental" % akkaVersion,
+  "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.17",
 
-  "org.iq80.leveldb" % "leveldb" % "0.7",
-  "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
+//  "org.iq80.leveldb" % "leveldb" % "0.7",
+//  "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
 
   //JSON
   "org.json4s" %% "json4s-jackson" % "3.3.0",
