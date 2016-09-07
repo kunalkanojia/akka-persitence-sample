@@ -30,12 +30,12 @@ class WSUserActor @Inject()(@Assisted out: ActorRef,
 
   override def receive: Receive = LoggingReceive {
 
-    case TradeCreated(trade) =>
-      val tradeCreateMessage = write(trade)
+    case TradeCreated(userId, trade) =>
+      val tradeCreateMessage = write(TradeCreated(userId, trade))
       out ! tradeCreateMessage
 
-    case TradeUpdated(trade) =>
-      val tradeUpdateMessage = write(trade)
+    case TradeUpdated(userId, trade) =>
+      val tradeUpdateMessage = write(TradeUpdated(userId, trade))
       out ! tradeUpdateMessage
 
   }

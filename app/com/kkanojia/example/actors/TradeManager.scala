@@ -8,7 +8,6 @@ import akka.persistence.query.{EventEnvelope, PersistenceQuery}
 import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
-import com.kkanojia.example.actors.UserActor.UserCreated
 import com.kkanojia.example.models.Trade
 
 object TradeManager {
@@ -25,25 +24,24 @@ object TradeManager {
 
 }
 
-class TradeManager(val id: String) extends Actor {
+class TradeManager(val id: String, userId: String) extends Actor {
 
   import TradeActor._
   import TradeManager._
 
   private val userTrades = mutable.Map[String, Trade]()
 
-  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](
-    LeveldbReadJournal.Identifier)
+  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
 
-  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("trade-events", 0L)
+  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag(userId, 0L)
 
   implicit val mat = ActorMaterializer()
   src.runForeach { env =>
     env.event match {
-      case TradeCreated(trade) =>
+      case TradeCreated(_, trade) =>
         userTrades(trade.id) = trade
 
-      case TradeUpdated(trade) =>
+      case TradeUpdated(_, trade) =>
         userTrades(trade.id) = trade
 
       case _ => println(s"Unknown event $env")
@@ -69,7 +67,7 @@ class TradeManager(val id: String) extends Actor {
     val name = s"trade_$tradeId"
     context.child(name) match {
       case Some(actorRef) => actorRef
-      case None => context.actorOf(Props(new TradeActor(tradeId)), name)
+      case None => context.actorOf(Props(new TradeActor(tradeId, userId)), name)
     }
   }
 }

@@ -1,5 +1,7 @@
 package com.kkanojia.example.actors
 
+import java.util.UUID
+
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.kkanojia.example.actors.TradeActor._
@@ -18,7 +20,7 @@ class TradeActorSpec(_system: ActorSystem) extends TestKit(_system) with Implici
     "be able to create a trade when called with `CreateTrade`" in {
       //Arrange
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
-      val tradeActor = system.actorOf(Props(new TradeActor(trade.id)))
+      val tradeActor = system.actorOf(Props(new TradeActor(trade.id, UUID.randomUUID().toString)))
 
       //Act
       tradeActor ! CreateTrade(trade)
@@ -35,7 +37,7 @@ class TradeActorSpec(_system: ActorSystem) extends TestKit(_system) with Implici
     "be able to update a trade when called with `UpdateTrade`" in {
       //Arrange
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
-      val tradeActor = system.actorOf(Props(new TradeActor(trade.id)))
+      val tradeActor = system.actorOf(Props(new TradeActor(trade.id, UUID.randomUUID().toString)))
       tradeActor ! CreateTrade(trade);
       expectMsgType[CreateTradeSuccess]
 

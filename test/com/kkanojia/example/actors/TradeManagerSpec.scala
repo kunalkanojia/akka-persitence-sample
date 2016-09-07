@@ -21,7 +21,7 @@ class TradeManagerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
       //Arrange
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
       val id = UUID.randomUUID().toString
-      val tradeManager = system.actorOf(Props(new TradeManager(id)))
+      val tradeManager = system.actorOf(Props(new TradeManager(id, id)))
 
       //Act
       tradeManager ! CreateTrade(trade)
@@ -39,9 +39,8 @@ class TradeManagerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
       //Arrange
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
       val id = UUID.randomUUID().toString
-      val tradeManager = system.actorOf(Props(new TradeManager(id)))
-      tradeManager ! CreateTrade(trade);
-      expectMsgType[CreateTradeSuccess]
+      val tradeManager = system.actorOf(Props(new TradeManager(id, id)))
+      tradeManager ! CreateTrade(trade); expectMsgType[CreateTradeSuccess]
 
       //Act
       val updatedTrade = trade.copy(buySell = "S")
@@ -61,11 +60,9 @@ class TradeManagerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
       val trade1 = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
       val trade2 = Trade(tradeDate = DateTime.now, buySell = "S", assetId = 1, quantity = 50, price = 10.2)
       val id = UUID.randomUUID().toString
-      val tradeManager = system.actorOf(Props(new TradeManager(id)))
-      tradeManager ! CreateTrade(trade1);
-      expectMsgType[CreateTradeSuccess]
-      tradeManager ! CreateTrade(trade2);
-      expectMsgType[CreateTradeSuccess]
+      val tradeManager = system.actorOf(Props(new TradeManager(id, id)))
+      tradeManager ! CreateTrade(trade1); expectMsgType[CreateTradeSuccess]
+      tradeManager ! CreateTrade(trade2); expectMsgType[CreateTradeSuccess]
 
       Thread.sleep(1000) //FIXME - wait for manager to get updated asynchronously
 
@@ -88,11 +85,9 @@ class TradeManagerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
       val trade1 = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
       val trade2 = Trade(tradeDate = DateTime.now, buySell = "S", assetId = 1, quantity = 50, price = 10.2)
       val id = UUID.randomUUID().toString
-      val tradeManager = system.actorOf(Props(new TradeManager(id)))
-      tradeManager ! CreateTrade(trade1);
-      expectMsgType[CreateTradeSuccess]
-      tradeManager ! CreateTrade(trade2);
-      expectMsgType[CreateTradeSuccess]
+      val tradeManager = system.actorOf(Props(new TradeManager(id, id)))
+      tradeManager ! CreateTrade(trade1); expectMsgType[CreateTradeSuccess]
+      tradeManager ! CreateTrade(trade2); expectMsgType[CreateTradeSuccess]
 
       //Act
       tradeManager ! FindTrade(trade1.id)

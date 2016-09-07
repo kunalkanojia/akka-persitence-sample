@@ -29,7 +29,7 @@ class TradeAggregateViewActorSpec(_system: ActorSystem) extends TestKit(_system)
       aggregateActor.tell(WatchTrades, wSUserActor)
 
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
-      val tradeActor = system.actorOf(Props(new TradeActor(trade.id)))
+      val tradeActor = system.actorOf(Props(new TradeActor(trade.id, UUID.randomUUID().toString)))
 
       //Act
       tradeActor ! CreateTrade(trade);
@@ -48,7 +48,7 @@ class TradeAggregateViewActorSpec(_system: ActorSystem) extends TestKit(_system)
       val wSUserActor = system.actorOf(Props(new ProbeWrapper(probe)))
       aggregateActor.tell(WatchTrades, wSUserActor)
       val trade = Trade(tradeDate = DateTime.now, buySell = "B", assetId = 1, quantity = 100, price = 20.2)
-      val tradeActor = system.actorOf(Props(new TradeActor(trade.id)))
+      val tradeActor = system.actorOf(Props(new TradeActor(trade.id, UUID.randomUUID().toString)))
 
       //Act
       tradeActor ! UpdateTrade(trade);

@@ -36,7 +36,7 @@ class TradeWSController @Inject()(@Named("userParentActor") userParentActor: Act
    * @return a fully realized websocket.
    */
   def ws: WebSocket = WebSocket.acceptOrResult[String, String] {
-    case rh if sameOriginCheck(rh) =>
+    case rh => //if sameOriginCheck(rh) =>
       wsFutureFlow(rh).map { flow =>
         Right(flow)
       }.recover {

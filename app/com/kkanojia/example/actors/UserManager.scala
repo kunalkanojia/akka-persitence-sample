@@ -27,28 +27,26 @@ class UserManager(val id: String) extends Actor with ActorLogging {
 
   private val usersInSystem = mutable.Map[String, String]() //email -> UUID
 
-  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](
-    LeveldbReadJournal.Identifier)
-
+  val queries = PersistenceQuery(context.system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
   val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("user-events", 0L)
-
   implicit val mat = ActorMaterializer()
+
   src.runForeach { env =>
     env.event match {
       case UserCreated(user) => {
-        println("received" + user)
         usersInSystem(user.email) = user.id
       }
       case _ => println(s"Unknown event $env")
     }}
 
-  override def receive: Receive = LoggingReceive {
+  override def receive: Receive =
+    LoggingReceive {
 
     case CreateUser(user) =>
       if (usersInSystem.contains(user.email))
         sender() ! UserCreationFailed(UserPresentException)
       else
-        getUserActor(user.id.toString) forward CreateUser(user)
+        getUserActor(user.id) forward CreateUser(user)
 
     case RetrieveUser(email: String) =>
       usersInSystem.get(email) match {

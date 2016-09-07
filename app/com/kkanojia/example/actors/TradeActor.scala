@@ -22,14 +22,13 @@ object TradeActor {
   case class UpdateTradeFailure(cause: Throwable)
 
   //Events
-  case class TradeCreated(trade: Trade) extends TaggedEvent
+  case class TradeCreated(userId: String, trade: Trade) extends TaggedEvent
 
-  case class TradeUpdated(trade: Trade) extends TaggedEvent
+  case class TradeUpdated(userId: String, trade: Trade) extends TaggedEvent
 
 }
 
-class TradeActor(val id: String
-) extends PersistentActor {
+class TradeActor(val id: String, userId: String) extends PersistentActor {
 
   override def persistenceId = id
 
@@ -40,21 +39,27 @@ class TradeActor(val id: String
   override def receiveCommand: Receive = {
 
     case CreateTrade(trade) =>
-      persist(TradeCreated(trade)) {
-       evt => sender() ! CreateTradeSuccess(trade)
+      persist(TradeCreated(userId, trade)) {
+       evt => {
+         tradeOpt = Some(trade)
+         sender() ! CreateTradeSuccess(trade)
+       }
       }
 
     case UpdateTrade(trade) =>
-      persist(TradeUpdated(trade)) {
-        evt => sender() ! UpdateTradeSuccess(trade)
+      persist(TradeUpdated(userId, trade)) {
+        evt => {
+          tradeOpt = Some(trade)
+          sender() ! UpdateTradeSuccess(trade)
+        }
       }
   }
 
   override def receiveRecover: Receive = {
-    case TradeCreated(trade) =>
+    case TradeCreated(usrId, trade) =>
       tradeOpt = Some(trade)
 
-    case TradeUpdated(trade) =>
+    case TradeUpdated(usrId, trade) =>
       tradeOpt = Some(trade)
   }
 }

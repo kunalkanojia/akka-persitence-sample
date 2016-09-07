@@ -44,7 +44,9 @@ class UserActor(override val persistenceId: String) extends PersistentActor {
 
     case CreateUser(user) =>
       persist(UserCreated(user)) {
-        event => sender() ! UserCreationSuccess(user)
+        event =>
+          updateState(user)
+          sender() ! UserCreationSuccess(user)
       }
 
     case GetUser =>
@@ -56,9 +58,12 @@ class UserActor(override val persistenceId: String) extends PersistentActor {
 
   override def receiveRecover: Receive = {
     case UserCreated(user) =>
-      userOpt = Some(user)
-      val name = s"tm_${user.id}"
-      context.actorOf(Props(new TradeManager(name)), name)
+      updateState(user)
   }
 
+  private def updateState(user: User): Unit = {
+    userOpt = Some(user)
+    val name = s"tm_${user.id}"
+    context.actorOf(Props(new TradeManager(name, user.id)), name)
+  }
 }

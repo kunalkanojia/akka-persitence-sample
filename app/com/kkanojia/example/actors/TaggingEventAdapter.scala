@@ -8,8 +8,8 @@ class TaggingEventAdapter extends WriteEventAdapter {
 
   override def toJournal(event: Any): Any = event match {
     case e: UserCreated => Tagged(event, Set("user-events"))
-    case e: TradeCreated => Tagged(event, Set("trade-events"))
-    case e: TradeUpdated => Tagged(event, Set("trade-events"))
+    case TradeCreated(userId, _) => Tagged(event, Set(userId, "trade-events"))
+    case TradeUpdated(userId, _) => Tagged(event, Set(userId, "trade-events"))
     case _ => event
   }
 
