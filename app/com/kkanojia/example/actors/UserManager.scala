@@ -1,16 +1,15 @@
 package com.kkanojia.example.actors
 
-import scala.collection._
-
 import akka.NotUsed
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.event.LoggingReceive
 import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal
-import akka.persistence.query.{EventEnvelope, PersistenceQuery}
+import akka.persistence.query.{EventEnvelope, Offset, PersistenceQuery}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import com.kkanojia.example.utils.exceptions.UserPresentException
+
+import scala.collection._
 
 object UserManager {
 
@@ -29,7 +28,7 @@ class UserManager(val id: String) extends Actor with ActorLogging {
   private val usersInSystem = mutable.Map[String, String]() //email -> UUID
 
   val queries = PersistenceQuery(context.system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
-  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("user-events", 0L)
+  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("user-events", Offset.noOffset)
   implicit val mat = ActorMaterializer()
 
   src.runForeach { env =>

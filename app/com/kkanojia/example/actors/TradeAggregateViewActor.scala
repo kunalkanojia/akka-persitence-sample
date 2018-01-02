@@ -1,17 +1,17 @@
 package com.kkanojia.example.actors
 
-import scala.collection.immutable.HashSet
-import scala.collection.mutable
-
 import akka.NotUsed
 import akka.actor.{Actor, ActorRef}
 import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
-import akka.persistence.query.{EventEnvelope, PersistenceQuery}
+import akka.persistence.query.{EventEnvelope, Offset, PersistenceQuery}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import com.kkanojia.example.actors.TradeActor.{TradeCreated, TradeUpdated}
 import com.kkanojia.example.actors.TradeAggregateViewActor.{UnWatchTrades, WatchTrades}
 import com.kkanojia.example.models.Trade
+
+import scala.collection.immutable.HashSet
+import scala.collection.mutable
 
 object TradeAggregateViewActor {
 
@@ -30,7 +30,7 @@ class TradeAggregateViewActor(val id: String) extends Actor {
   private val trades = mutable.Map[String, Trade]()
 
   val queries = PersistenceQuery(context.system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
-  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("trade-events", 0L)
+  val src: Source[EventEnvelope, NotUsed] = queries.eventsByTag("trade-events", Offset.noOffset)
   implicit val mat = ActorMaterializer()
 
   src.runForeach { env =>
