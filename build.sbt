@@ -4,7 +4,7 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtWeb)
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
@@ -15,15 +15,16 @@ herokuAppName in Compile := "play-akka-persistence"
 herokuJdkVersion in Compile := "1.8"
 
 
-val akkaVersion = "2.4.9"
+val akkaVersion = "2.5.8"
 
 libraryDependencies ++= Seq(
   ws,
 
   //Akka Persistence
   "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
-  "com.typesafe.akka" %% "akka-persistence-query-experimental" % akkaVersion,
-  "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.17",
+  "com.typesafe.akka" %% "akka-persistence-query" % akkaVersion,
+  "com.typesafe.akka" %% "akka-persistence-cassandra" % "0.80-RC2",
+  "com.typesafe.akka" %% "akka-persistence-cassandra-launcher" % "0.80-RC2" % Test,
 
 //  "org.iq80.leveldb" % "leveldb" % "0.7",
 //  "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
@@ -33,8 +34,11 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-ext" % "3.3.0",
 
   //UI
-  "org.webjars" %% "webjars-play" % "2.5.0-2",
-  "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3",
+  "org.webjars" %% "webjars-play" % "2.5.0-4",
+  filters,
+  "org.webjars" % "bootstrap" % "3.3.7-1" exclude("org.webjars", "jquery"),
+  "org.webjars" % "jquery" % "3.2.1",
+  "com.adrianhurt" %% "play-bootstrap" % "1.2-P25-B3",
 
   //TEST
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
